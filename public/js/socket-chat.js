@@ -1,6 +1,6 @@
 var socket = io();
 
-let params = new URLSearchParams(window.location.search);
+var params = new URLSearchParams(window.location.search);
 
 if(!params.has('nombre') || !params.has('sala')) {
     throw new Error('El nombre es oblitario');
@@ -10,6 +10,7 @@ if(!params.has('nombre') || !params.has('sala')) {
 socket.on('connect',  function() {
     socket.emit('agregarPersona', {nombre: params.get('nombre'), sala: params.get('sala')}, function (resp) {
         console.log('personas actualmente en el chat ', resp);
+        renderizarPersonas(resp);
     })
 });
 
@@ -19,11 +20,12 @@ socket.on('disconnect', function() {
 });
 
 socket.on('listaPersonas', function (data) {
-    console.log(data);
+    renderizarPersonas(data);
 })
 
 socket.on('enviarMensaje', function (mensaje) {
-    console.log(mensaje)
+    renderizarMensaje(mensaje, false);
+    scrollBottom();
 })
 
 socket.on('mensajePrivado', function (mensaje) {
